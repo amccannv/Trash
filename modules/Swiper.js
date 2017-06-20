@@ -2,9 +2,12 @@
 
 import React from 'react';
 import {StyleSheet, Text, View, Image, CameraRoll} from 'react-native';
-
-
+import {RippleLoader} from 'react-native-indicator';
 import SwipeCards from 'react-native-swipe-cards';
+import RNFetchBlob from 'react-native-fetch-blob';
+import BestGrid from './Gallery';
+var RNGRP = require('react-native-get-real-path');
+var RNFS = require('react-native-fs');
 
 let Card = React.createClass({
 
@@ -18,40 +21,29 @@ let Card = React.createClass({
 let NoMoreCards = React.createClass({
   render() {
     return (
-      <View style={styles.noMoreCards}>
-        <Text>No more cards</Text>
-      </View>
+      <BestGrid deletedPhotos={deletedArray}/>
     )
   }
 })
 
-const Cards = [
-  {name: '1', image: 'bigboy'},
-  {name: '2', image: 'camera'},
-  {name: '3', image: 'friends'},
-  {name: '4', image: 'peppers'},
-  {name: '5', image: 'rice'},
-  {name: '6', image: 'stairs'},
-  {name: '7', image: 'test'},
-  {name: '8', image: 'https://media.giphy.com/media/hEwST9KM0UGti/giphy.gif'},
-  {name: '9', image: 'https://media.giphy.com/media/3oEduJbDtIuA2VrtS0/giphy.gif'},
-]
+let Gallery = React.createClass({
 
-const Cards2 = [
-  {name: '10', image: 'https://media.giphy.com/media/12b3E4U9aSndxC/giphy.gif'},
-  {name: '11', image: 'https://media4.giphy.com/media/6csVEPEmHWhWg/200.gif'},
-  {name: '12', image: 'https://media4.giphy.com/media/AA69fOAMCPa4o/200.gif'},
-  {name: '13', image: 'https://media.giphy.com/media/OVHFny0I7njuU/giphy.gif'},
-]
+  render() {
+    return (
+      <Image style={styles.thumbnail} source={{uri: this.props.node.image.uri}} />
+    )
+  }
+})
 
-const photoLib = [];
+const deletedArray = [];
+var delIndex = 0;
 
 export default React.createClass({
 
   getInitialState() {
     return {
       photos: [],
-      cards: Cards,
+      //cards: Cards,
       outOfCards: false,
       photosFound: false
     }
@@ -72,7 +64,37 @@ export default React.createClass({
   },
 
   handleNope (card) {
+    var imageURI = this.state.photos[delIndex].node.image.uri
+    delIndex = delIndex + 1
+
+    deletedArray.push(imageURI)
+    console.log(deletedArray)
+    //this.deleteImageFile(imageURI)
+
     console.log("Added to delete array.")
+  },
+
+  deleteImageFile(imageURI) {
+
+    console.log(imageURI)
+
+    RNGRP.getRealPathFromURI(imageURI).then(filePath =>
+      RNFS.unlink(filePath)
+      .then(() => {
+        RNFetchBlob.fs.scanFile([ { path : filePath } ])
+        .then(() => {
+          console.log("scan file success")
+        })
+        .catch((err) => {
+          console.log("scan file error")
+        })
+        console.log('FILE DELETED');
+      })
+      // `unlink` will throw an error, if the item to unlink does not exist
+      .catch((err) => {
+        console.log(err.message);
+      })
+    )
   },
 
   cardRemoved (index) {
@@ -80,17 +102,8 @@ export default React.createClass({
 
     let CARD_REFRESH_LIMIT = 3
 
-    if (this.state.cards.length - index <= CARD_REFRESH_LIMIT + 1) {
-      console.log(`There are only ${this.state.cards.length - index - 1} cards left.`);
-
-      if (!this.state.outOfCards) {
-        console.log(`Adding ${Cards2.length} more cards`)
-
-        this.setState({
-          cards: this.state.cards.concat(Cards2),
-          outOfCards: true
-        })
-      }
+    if (this.state.photos.length - index <= CARD_REFRESH_LIMIT + 1) {
+      console.log(`There are only ${this.state.photos.length - index - 1} cards left.`);
     }
 
   },
@@ -100,7 +113,7 @@ export default React.createClass({
     console.log(this.state.photos)
     if (!this.state.photosFound) {
       return (
-        <Text>Loading</Text>
+        <RippleLoader/>
       )
     }
     else {

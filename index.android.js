@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Swiper from './modules/Swiper'
+import Swiper from './modules/Swiper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {
   AppRegistry,
@@ -12,10 +12,9 @@ import {
   StatusBar,
 } from 'react-native';
 
-let cardLinks = ['./img/test.png', './img/camera.jpg', './img/bird.gif', './img/friends.jpg', './img/peppers.jpg', './img/camera.jpg', './img/stairs.jpg'];
 let cardInd = 0;
 
-export default class Pulito extends Component {
+export default class Trash extends Component {
   render() {
     return (
       <View style={styles.container}>
@@ -23,7 +22,7 @@ export default class Pulito extends Component {
           backgroundColor='#D0D0D0'
         />
         <View style={styles.header}>
-          <Text style={styles.headerText}>Pulito</Text>
+          <Text style={styles.headerText}>Trash</Text>
         </View>
         <View style={styles.photo}>
           <Swiper style={{flex: 1}} />
@@ -46,6 +45,7 @@ export default class Pulito extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FCFCFC',
   },
   header: {
     justifyContent: 'space-around',
@@ -61,13 +61,15 @@ const styles = StyleSheet.create({
   photo: {
     flex: 5,
     backgroundColor: '#FCFCFC',
+    justifyContent: 'space-around',
+    alignItems: 'center',
   },
   actionBar: {
     justifyContent: 'space-around',
     alignItems: 'center',
     flexDirection: 'row',
     flex: 1,
-    backgroundColor: '#FCFCFC',
+    backgroundColor: 'transparent',
   },
   trashButton: {
     alignItems:'center',
@@ -93,4 +95,4 @@ const styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('Pulito', () => Pulito);
+AppRegistry.registerComponent('Trash', () => Trash);

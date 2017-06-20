@@ -12,7 +12,7 @@ import {
   View
 } from 'react-native';
 
-export default class Pulito extends Component {
+export default class Trash extends Component {
   render() {
     return (
       <View style={styles.container}>
@@ -50,4 +50,4 @@ const styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('Pulito', () => Pulito);
+AppRegistry.registerComponent('Trash', () => Trash);
