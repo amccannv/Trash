@@ -1,57 +1,64 @@
 import React from 'react';
-import { Button, ScrollView } from 'react-native';
 import { StackNavigator } from 'react-navigation';
-import SampleText from './SampleText';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {
+  AppRegistry,
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  TouchableOpacity,
+  Image,
+  StatusBar,
+  ScrollView,
+} from 'react-native';
+import Swipe from './Swipe';
 
 const ReadyScreen = ({ navigation, banner }) => (
   <ScrollView>
-    <SampleText>{banner}</SampleText>
     <Button
-      onPress={() => navigation.navigate('Profile', { name: 'Jane' })}
-      title="Go to a profile screen"
+      onPress = {() => navigation.navigate('Swipe')}
+      title = "Go to a profile screen"
     />
-    <Button
-      onPress={() => navigation.navigate('Photos', { name: 'Jane' })}
-      title="Go to a photos screen"
-    />
-    <Button onPress={() => navigation.goBack(null)} title="Go back" />
   </ScrollView>
 );
 
 const ReviewScreen = ({ navigation }) => (
-  <MyNavScreen banner="Home Screen" navigation={navigation} />
+  <Swipe />
 );
 ReviewScreen.navigationOptions = {
   title: 'Welcome',
 };
 
 const SwipeScreen = ({ navigation }) => (
-  <MyNavScreen
-    banner={`${navigation.state.params.name}'s Photos`}
-    navigation={navigation}
-  />
+  <Swipe />
 );
 SwipeScreen.navigationOptions = {
-  title: 'Photos',
+  title: 'Trash',
+  headerStyle: {
+    shadowOpacity: 0,
+    shadowOpacity: 0,
+    shadowOffset: {
+      height: 0,
+    },
+    elevation: 0,
+  },
+  headerTitleStyle: {
+    fontFamily: 'LemonMilklight',
+    fontWeight: '200', // quick fix for react-navigation quirk
+    fontSize: 20,
+    color: '#757575',
+  }
 };
-
-const MyProfileScreen = ({ navigation }) => (
-  <MyNavScreen
-    banner={`${navigation.state.params.mode === 'edit' ? 'Now Editing ' : ''}${navigation.state.params.name}'s Profile`}
-    navigation={navigation}
-  />
-);
 
 const TrashStack = StackNavigator({
   Ready: {
     screen: ReadyScreen,
   },
   Swipe: {
-    path: 'people/:name',
     screen: SwipeScreen,
   },
   Review: {
-    path: 'photos/:name',
     screen: ReviewScreen,
   },
 });
