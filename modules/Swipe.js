@@ -19,9 +19,6 @@ export default class Swipe extends Component {
         <StatusBar
           backgroundColor='#D0D0D0'
         />
-        {/* <View style={styles.header}>
-          <Text style={styles.headerText}>Trash</Text>
-        </View> */}
         <View style={styles.photo}>
           <Swiper style={{flex: 1}} />
         </View>

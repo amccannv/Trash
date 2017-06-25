@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PhotoGrid from 'react-native-photo-grid';
 import { Image, TouchableOpacity, Text }from 'react-native';
 
-class BestGrid extends React.Component {
+class ReviewGallery extends React.Component {
 
   constructor() {
     super();
@@ -53,4 +53,4 @@ class BestGrid extends React.Component {
 
 }
 
-export default BestGrid;
+export default ReviewGallery;

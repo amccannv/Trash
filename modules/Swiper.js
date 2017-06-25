@@ -5,7 +5,7 @@ import {StyleSheet, Text, View, Image, CameraRoll} from 'react-native';
 import {RippleLoader} from 'react-native-indicator';
 import SwipeCards from 'react-native-swipe-cards';
 import RNFetchBlob from 'react-native-fetch-blob';
-import BestGrid from './Gallery';
+import ReviewGallery from './Gallery';
 var RNGRP = require('react-native-get-real-path');
 var RNFS = require('react-native-fs');
 
@@ -21,7 +21,7 @@ let Card = React.createClass({
 let NoMoreCards = React.createClass({
   render() {
     return (
-      <BestGrid deletedPhotos={deletedArray}/>
+      <ReviewGallery deletedPhotos={deletedArray}/>
     )
   }
 })
