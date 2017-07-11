@@ -1,3 +1,7 @@
+/*
+Module for my 'ready-to-trash' home screen.
+*/
+
 import React, { Component } from 'react';
 import Swiper from './Swiper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';

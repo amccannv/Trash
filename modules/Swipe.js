@@ -12,7 +12,8 @@ import {
   StatusBar,
 } from 'react-native';
 
-export default class Swipe extends Component {
+export default React.createClass({
+
   render() {
     return (
       <View style={styles.container}>
@@ -20,7 +21,7 @@ export default class Swipe extends Component {
           backgroundColor='#D0D0D0'
         />
         <View style={styles.photo}>
-          <Swiper style={{flex: 1}} />
+          <Swiper index = {this.props.index} handle = {this.props.handle} />
         </View>
         <View style={styles.actionBar}>
           <TouchableOpacity style={styles.trashButton}>
@@ -35,7 +36,7 @@ export default class Swipe extends Component {
       </View>
     );
   }
-}
+})
 
 const styles = StyleSheet.create({
   container: {

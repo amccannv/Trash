@@ -13,6 +13,12 @@ import {
   StatusBar,
 } from 'react-native';
 
+console.log = function () {};
+console.info = function () {};
+console.warn = function () {};
+console.error = function () {}
+console.debug = function () {}
+
 export default class Trash extends Component {
   render() {
     return (

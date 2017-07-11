@@ -36,14 +36,13 @@ let Gallery = React.createClass({
 })
 
 const deletedArray = [];
-var delIndex = 0;
 
 export default React.createClass({
 
   getInitialState() {
     return {
       photos: [],
-      //cards: Cards,
+      index: this.props.index,
       outOfCards: false,
       photosFound: false
     }
@@ -60,18 +59,23 @@ export default React.createClass({
   },
 
   handleYup (card) {
-    console.log("Saved photo.")
+    this.state.index = this.state.index + 1
+    this.props.handle(this.state.index, deletedArray)
+    //console.log("Saved photo.")
   },
 
   handleNope (card) {
-    var imageURI = this.state.photos[delIndex].node.image.uri
-    delIndex = delIndex + 1
+    var imageURI = this.state.photos[this.state.index].node.image.uri
+    deletedArray.push({
+      id: this.state.index,
+      src: imageURI,
+      delete: true})
+    this.state.index = this.state.index + 1
 
-    deletedArray.push(imageURI)
-    console.log(deletedArray)
+    this.props.handle(this.state.index, deletedArray)
     //this.deleteImageFile(imageURI)
 
-    console.log("Added to delete array.")
+    //console.log("Added to delete array.")
   },
 
   deleteImageFile(imageURI) {
@@ -97,20 +101,9 @@ export default React.createClass({
     )
   },
 
-  cardRemoved (index) {
-    console.log(`The index is ${index}`);
-
-    let CARD_REFRESH_LIMIT = 3
-
-    if (this.state.photos.length - index <= CARD_REFRESH_LIMIT + 1) {
-      console.log(`There are only ${this.state.photos.length - index - 1} cards left.`);
-    }
-
-  },
-
   render() {
 
-    console.log(this.state.photos)
+    //console.log(this.state.photos)
     if (!this.state.photosFound) {
       return (
         <RippleLoader/>
@@ -119,7 +112,7 @@ export default React.createClass({
     else {
       return (
         <SwipeCards
-          cards={this.state.photos}
+          cards={this.state.photos.slice(this.state.index)}
           loop={false}
 
           renderCard={(cardData) => <Card {...cardData} />}
@@ -132,7 +125,6 @@ export default React.createClass({
 
           handleYup={this.handleYup}
           handleNope={this.handleNope}
-          cardRemoved={this.cardRemoved}
         />
       )
     }
@@ -164,5 +156,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  },
 })
