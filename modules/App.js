@@ -2,22 +2,28 @@
 
 import React from 'react';
 import { StackNavigator } from 'react-navigation';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import HeaderIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {
+  AsyncStorage,
   AppRegistry,
   StyleSheet,
   Text,
   View,
-  Button,
+//  Button,
   TouchableOpacity,
   Image,
   StatusBar,
   ScrollView,
+  BackHandler,
+  CameraRoll,
 } from 'react-native';
-
+import { Icon } from 'react-native-elements';
 import Ready from './Ready';
+import FadeInView from 'react-native-fade-in-view';
 import ReviewGallery from './Gallery';
+import Counter from 'react-native-counter';
 import Swipe from './Swipe';
+import { Button } from 'react-native-elements'
 
 
 class ReadyScreen extends React.Component {
@@ -25,19 +31,93 @@ class ReadyScreen extends React.Component {
     header: null,
   }
 
-  render() {
-    return (
-      // <Ready />
-      <ScrollView>
-        <Text>Ready to trash some photos?</Text>
-        <Button
-          onPress = {() => this.props.navigation.navigate('Swipe')}
-          title = "Go to a profile screen"
-        />
-      </ScrollView>
-    );
+  constructor(props) {
+    super(props)
+    this.state = {
+      photos: [],
+      countFinished: false,
+    };
   }
-}
+
+  componentWillMount() {
+    CameraRoll.getPhotos({
+      first: 10000,
+      assetType: 'All'
+    }).then(res => {
+      this.setState({photos: res.edges})
+    })
+  }
+
+  renderButton() {
+    this.setState({countFinished: true})
+  }
+
+  render() {
+    if (this.state.countFinished === false) {
+      return (
+        <View style = {styles.container}>
+          <View style = {styles.titleContainer}>
+            <Text style = {styles.title}>Trash</Text>
+          </View>
+          <View style = {styles.photoCounter}>
+            <Text style = {styles.text}>Ready to trash </Text>
+            <Counter
+              end = {this.state.photos.length}                    // REQUIRED End of the counter
+              start = {0}                     // Beginning of the counter
+              time = {1200}                   // Duration (in ms) of the counter
+              digits = {0}                    // Number of digits after the comma
+              easing = "linear"
+              style = {styles.countText}
+              onComplete = {this.renderButton.bind(this)}
+            />
+            <Text style = {styles.text}> photos?</Text>
+          </View>
+          <View style = {styles.readyButtonContainer}>
+          </View>
+        </View>
+      );
+    } else {
+      return (
+        <View style = {styles.container}>
+          <View style = {styles.titleContainer}>
+            <Text style = {styles.title}>Trash</Text>
+          </View>
+          <View style = {styles.photoCounter}>
+            <Text style = {styles.text}>Ready to trash </Text>
+            <Counter
+              end = {this.state.photos.length}                    // REQUIRED End of the counter
+              start = {0}                     // Beginning of the counter
+              time = {1000}                   // Duration (in ms) of the counter
+              digits = {0}                    // Number of digits after the comma
+              easing = "linear"
+              style = {styles.countText}
+              onComplete = {this.renderButton}
+            />
+            <Text style = {styles.text}> photos?</Text>
+          </View>
+          <View style={styles.readyButtonContainer}>
+            <FadeInView
+              duration={1200}
+              style={styles.readyButtonContainer}
+              //onFadeComplete={() => alert('Ready')}
+            >
+              <Button
+                large
+                raised
+                fontFamily = 'LemonMilklight'
+                backgroundColor = '#e91e63'
+                onPress = {() => this.props.navigation.navigate('Swipe')}
+                icon = {{name: 'delete-variant', type: 'material-community'}}
+                title = 'START TRASHING'
+                borderRadius = {50}
+              />
+            </FadeInView>
+          </View>
+        </View>
+        );
+      }
+    }
+  }
 
 class SwipeScreen extends React.Component {
 
@@ -48,9 +128,11 @@ class SwipeScreen extends React.Component {
       deletedArray: (this.props.navigation.state.params === undefined) ? [] : this.props.navigation.state.params.gallery
     };
     this.handle = this.handle.bind(this)
+    console.log('constructor')
   }
 
   componentWillMount() {
+    console.log('rendered swipe')
     const { setParams } = this.props.navigation;
 
     setParams({
@@ -80,6 +162,7 @@ class SwipeScreen extends React.Component {
       },
       elevation: 0,
       justifyContent: 'space-around',
+      backgroundColor: '#FCFCFC',
     },
     headerTitleStyle: {
       fontFamily: 'LemonMilklight',
@@ -99,27 +182,28 @@ class SwipeScreen extends React.Component {
       onPress = {() => navigation.navigate('Review', {
         deletedArray: navigation.state.params.deletedArray,
         index: navigation.state.params.index})}>
-      <Icon name='delete-variant' color='#757575' size={30}/>
-    </TouchableOpacity>,
-    headerLeft: <TouchableOpacity style={{
-      alignItems:'center',
-      justifyContent:'center',
-      paddingRight: 50,
-      width:100,
-      height:100,
-      backgroundColor:'#FCFCFC',
-      borderRadius:100,}}
-      onPress={()=>{ navigation.navigate('Ready')}}>
-      <Icon name='home-variant' color='#757575' size={30}/>
-    </TouchableOpacity>,
-  });
+        <HeaderIcon name='delete-variant' color='#757575' size={30}/>
+      </TouchableOpacity>,
+      headerLeft: <TouchableOpacity style={{
+        alignItems:'center',
+        justifyContent:'center',
+        paddingRight: 50,
+        width:100,
+        height:100,
+        backgroundColor:'#FCFCFC',
+        borderRadius:100,}}
+        onPress={()=>{ navigation.navigate('Ready')}}>
+        <HeaderIcon name='home-variant' color='#757575' size={30}/>
+      </TouchableOpacity>,
+    });
 
-  render() {
-    return (
-      <Swipe index = {this.state.index} handle = {this.handle}/>
-    );
+    render() {
+      console.log('render')
+      return (
+        <Swipe index = {this.state.index} deletedArray = {this.state.deletedArray} handle = {this.handle}/>
+      );
+    }
   }
-}
 
 class ReviewScreen extends ReviewGallery {
 
@@ -141,6 +225,7 @@ class ReviewScreen extends ReviewGallery {
       },
       elevation: 0,
       justifyContent: 'space-around',
+      backgroundColor: '#FCFCFC',
     },
     headerTitleStyle: {
       fontFamily: 'LemonMilklight',
@@ -158,8 +243,8 @@ class ReviewScreen extends ReviewGallery {
       height:100,
       backgroundColor:'#FCFCFC',
       borderRadius:100,}}
-      onPress={()=>{ navigation.navigate('Swipe', {index: navigation.state.params.index, gallery: navigation.state.params.deletedArray}); }}>
-      <Icon name='keyboard-backspace' color='#757575' size={30}/>
+      onPress={()=>{ navigation.navigate('Swipe', {index: navigation.state.params.index, gallery: navigation.state.params.gallery}); }}>
+      <HeaderIcon name='keyboard-backspace' color='#757575' size={30}/>
     </TouchableOpacity>,
   });
 
@@ -178,6 +263,52 @@ const TrashStack = StackNavigator({
 });
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems:'center',
+    justifyContent:'center',
+    backgroundColor:'#FCFCFC',
+  },
+  image: {
+    flex: 1,
+    resizeMode: 'contain',
+    width: 300,
+    height: 300,
+  },
+  titleContainer: {
+    flex: 2,
+    alignSelf: 'center',
+    justifyContent: 'space-around',
+  },
+  title: {
+    fontFamily: 'LemonMilklight',
+    alignSelf: 'center',
+    justifyContent: 'space-around',
+    fontSize: 50,
+    color: '#757575',
+  },
+  photoCounter: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  countText: {
+    fontFamily: 'LemonMilklight',
+    alignSelf: 'center',
+    justifyContent: 'space-around',
+    fontSize: 20,
+    color: '#1AC673',
+  },
+  text: {
+    fontFamily: 'LemonMilklight',
+    alignSelf: 'center',
+    justifyContent: 'space-around',
+    fontSize: 20,
+    color: '#757575',
+  },
+  readyButtonContainer: {
+    flex: 1
+  },
   ReviewButton: {
     alignItems:'center',
     justifyContent:'center',

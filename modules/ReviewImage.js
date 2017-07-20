@@ -24,6 +24,7 @@ class ReviewImage extends React.Component {
         containerStyle = {{
           backgroundColor: 'rgba(0,0,0,0)',
         }}
+        checkedColor = '#1AC673'
         checkedIcon = 'dot-circle-o'
         uncheckedIcon = 'circle-o'
         checked = {this.state.checked}

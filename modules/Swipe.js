@@ -21,9 +21,9 @@ export default React.createClass({
           backgroundColor='#D0D0D0'
         />
         <View style={styles.photo}>
-          <Swiper index = {this.props.index} handle = {this.props.handle} />
+          <Swiper index = {this.props.index} deletedArray = {this.props.deletedArray} handle = {this.props.handle} />
         </View>
-        <View style={styles.actionBar}>
+        {/* <View style={styles.actionBar}>
           <TouchableOpacity style={styles.trashButton}>
             <Icon name='delete-variant' color='#757575' size={50}/>
             <Text style={styles.buttonText}>Delete</Text>
@@ -32,7 +32,7 @@ export default React.createClass({
             <Icon name='heart-outline' color='#FF5252' size={50}/>
             <Text style={styles.buttonText}>Save</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
       </View>
     );
   }
@@ -70,11 +70,11 @@ const styles = StyleSheet.create({
   trashButton: {
     alignItems:'center',
     justifyContent:'center',
-    paddingLeft: 50,
-    width:100,
-    height:100,
+    //paddingLeft: 50,
+    width:50,
+    height:50,
     backgroundColor:'#FCFCFC',
-    borderRadius:100,
+    borderRadius:50,
   },
   saveButton: {
     alignItems:'center',

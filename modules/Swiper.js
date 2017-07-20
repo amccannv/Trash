@@ -44,13 +44,14 @@ export default React.createClass({
       photos: [],
       index: this.props.index,
       outOfCards: false,
-      photosFound: false
+      photosFound: false,
+      deletedArray: this.props.deletedArray,
     }
   },
 
   componentWillMount() {
     CameraRoll.getPhotos({
-      first: 20,
+      first: 10000,
       assetType: 'All'
     }).then(res => {
       this.setState({photos: res.edges})
@@ -60,19 +61,19 @@ export default React.createClass({
 
   handleYup (card) {
     this.state.index = this.state.index + 1
-    this.props.handle(this.state.index, deletedArray)
+    this.props.handle(this.state.index, this.state.deletedArray)
     //console.log("Saved photo.")
   },
 
   handleNope (card) {
     var imageURI = this.state.photos[this.state.index].node.image.uri
-    deletedArray.push({
+    this.state.deletedArray.push({
       id: this.state.index,
       src: imageURI,
       delete: true})
     this.state.index = this.state.index + 1
 
-    this.props.handle(this.state.index, deletedArray)
+    this.props.handle(this.state.index, this.state.deletedArray)
     //this.deleteImageFile(imageURI)
 
     //console.log("Added to delete array.")
