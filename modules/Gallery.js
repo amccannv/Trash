@@ -38,11 +38,12 @@ class ReviewGallery extends React.Component {
     this.setState({ progress });
     setTimeout(() => {
       this.setState({ indeterminate: false });
-      setInterval(() => {
+      const handle = setInterval(() => {
         //progress += Math.random() / 5;
         progress += 0.01
         if (progress > 1) {
           progress = 1;
+          clearInterval(handle)
           //setTimeout(() => {this.setState({isVisible: false})}, 500);
         }
         this.setState({ progress });
