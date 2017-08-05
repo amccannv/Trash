@@ -1,10 +1,11 @@
 'use strict';
 
 import React from 'react';
-import {StyleSheet, Text, View, Image, CameraRoll} from 'react-native';
+import {StyleSheet, Text, View, Image, CameraRoll, TouchableOpacity} from 'react-native';
 import {RippleLoader} from 'react-native-indicator';
 import SwipeCards from 'react-native-swipe-cards';
 import RNFetchBlob from 'react-native-fetch-blob';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ReviewGallery from './Gallery';
 var RNGRP = require('react-native-get-real-path');
 var RNFS = require('react-native-fs');
@@ -21,13 +22,17 @@ let Card = React.createClass({
 let NoMoreCards = React.createClass({
   render() {
     return (
-      <ReviewGallery deletedPhotos={deletedArray}/>
+      <View style = {styles.noPhotosContainer}>
+        <View>
+          <Text style = {styles.noPhotosText}>You're Done</Text>
+          <Text style = {styles.noPhotosTextSecond}>Go Back to Start Over</Text>
+        </View>
+      </View>
     )
   }
 })
 
 let Gallery = React.createClass({
-
   render() {
     return (
       <Image style={styles.thumbnail} source={{uri: this.props.node.image.uri}} />
@@ -74,9 +79,6 @@ export default React.createClass({
     this.state.index = this.state.index + 1
 
     this.props.handle(this.state.index, this.state.deletedArray)
-    //this.deleteImageFile(imageURI)
-
-    //console.log("Added to delete array.")
   },
 
   deleteImageFile(imageURI) {
@@ -157,5 +159,25 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  noPhotosContainer: {
+    flex: 1,
+    backgroundColor: '#FCFCFC',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  noPhotosText: {
+    fontFamily: 'LemonMilklight',
+    alignSelf: 'center',
+    fontWeight: '200', // quick fix for react-navigation quirk
+    fontSize: 20,
+    color: '#757575',
+  },
+  noPhotosTextSecond: {
+    fontFamily: 'LemonMilklight',
+    alignSelf: 'center',
+    fontWeight: '200', // quick fix for react-navigation quirk
+    fontSize: 17,
+    color: '#757575',
   },
 })

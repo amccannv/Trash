@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import PhotoGrid from 'react-native-photo-grid';
-import { View, Image, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, Image, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import * as Progress from 'react-native-progress';
+import Modal from 'react-native-modal';
 import RNFetchBlob from 'react-native-fetch-blob';
 var RNGRP = require('react-native-get-real-path');
 var RNFS = require('react-native-fs');
@@ -16,6 +18,9 @@ class ReviewGallery extends React.Component {
     super();
     this.state = {
       items: [],
+      progress: 0,
+      indeterminate: true,
+      isVisible: false,
     };
     this.handle = this.handle.bind(this)
   }
@@ -27,11 +32,41 @@ class ReviewGallery extends React.Component {
     this.setState({ items: this.props.navigation.state.params.deletedArray });
   }
 
+  animate() {
+    this.setState({isVisible: true})
+    let progress = 0;
+    this.setState({ progress });
+    setTimeout(() => {
+      this.setState({ indeterminate: false });
+      setInterval(() => {
+        //progress += Math.random() / 5;
+        progress += 0.01
+        if (progress > 1) {
+          progress = 1;
+          //setTimeout(() => {this.setState({isVisible: false})}, 500);
+        }
+        this.setState({ progress });
+      }, 21);
+    }, 100);
+  }
+
   render() {
+
+    var loadingCircle = null;
+    if (this.state.isVisible) {
+      loadingCircle = (<Progress.Circle
+        size = {200}
+        showsText = {true}
+        style = {styles.progress}
+        progress = {this.state.progress}
+        indeterminate = {this.state.indeterminate}
+        color = '#1AC673'
+      />);
+    }
 
     if (this.state.items.length !== 0) {
       return(
-        <View style = {{flex: 1}}>
+        <View style = {styles.container}>
           <PhotoGrid
             data = { this.state.items }
             itemsPerRow = { 3 }
@@ -41,8 +76,24 @@ class ReviewGallery extends React.Component {
             style = {styles.container}
           />
           <TouchableOpacity style={styles.trashButton}>
-            <Icon name='delete-variant' color='#FCFCFC' size={50} style ={{justifyContent: 'center'}} onPress = {this.deleteImageFile.bind(this)}/>
+            <Icon
+              name = 'delete-variant'
+              color = '#FCFCFC'
+              size = {50}
+              style = {{justifyContent: 'center'}}
+              onPress = {() => Alert.alert(
+                'About to Trash',
+                'Are you sure you want to trash the selected photos?',
+                [
+                  {text: 'CANCEL', onPress: () => console.log('Cancel Pressed!'), style: 'cancel'},
+                  {text: 'TRASH', onPress: this.deleteImageFile.bind(this)},
+                ]
+              )}
+            />
           </TouchableOpacity>
+          <View style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}}>
+            {loadingCircle}
+          </View>
         </View>
       );
     }
@@ -73,37 +124,42 @@ class ReviewGallery extends React.Component {
   }
 
   deleteImageFile() {
-    const promises = []
-    counter = 0
-    const tempItems = this.state.items
-    console.log(tempItems)
-    for (i = 0; i < tempItems.length; i++) {
-      if(tempItems[i].delete === true) {
-        imageURI = tempItems[i].src
-        promises.push(RNGRP.getRealPathFromURI(imageURI).then(filePath =>
-          RNFS.unlink(filePath)
-          .then(() => {
-            RNFetchBlob.fs.scanFile([ { path : filePath } ])
-          })));
+    this.animate();
+    setTimeout(() => {
+      this.setState({isVisible: false, progress: 0})
+      const promises = []
+      counter = 0
+      const tempItems = this.state.items
+      console.log(tempItems)
+      for (i = 0; i < tempItems.length; i++) {
+        if(tempItems[i].delete === true) {
+          imageURI = tempItems[i].src
+          promises.push(RNGRP.getRealPathFromURI(imageURI).then(filePath =>
+            RNFS.unlink(filePath)
+            .then(() => {
+              RNFetchBlob.fs.scanFile([ { path : filePath } ])
+            })));
+          }
         }
-      }
 
-      Promise.all(promises)
-      .then(() => {
-        var temp = tempItems.filter(function(e) { return e.delete !== true })
-        this.setState({items: temp}, function() {
-          const { setParams } = this.props.navigation;
+        Promise.all(promises)
+        .then(() => {
+          console.log('did I get here again')
+          var temp = tempItems.filter(function(e) { return e.delete !== true })
+          this.setState({items: temp}, function() {
+            const { setParams } = this.props.navigation;
 
-          setParams({
-            index: this.props.navigation.state.params.index,
-            gallery: this.state.items
+            setParams({
+              index: this.props.navigation.state.params.index,
+              gallery: this.state.items
+            });
           });
+          console.log(this.state.items)
+        })
+        .catch((e) => {
+          console.log(e)
         });
-        console.log(this.state.items)
-      })
-      .catch((e) => {
-        console.log(e)
-      });
+      }, 4000)
     }
 
     renderItem(item, itemSize, handle) {
@@ -142,6 +198,10 @@ class ReviewGallery extends React.Component {
       position: 'absolute',
       bottom: '5%',
       right: '5%',
+    },
+    modal: {
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     trashButton: {
       position: 'absolute',

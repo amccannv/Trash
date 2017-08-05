@@ -9,7 +9,6 @@ import {
   StyleSheet,
   Text,
   View,
-//  Button,
   TouchableOpacity,
   Image,
   StatusBar,
@@ -110,6 +109,7 @@ class ReadyScreen extends React.Component {
                 icon = {{name: 'delete-variant', type: 'material-community'}}
                 title = 'START TRASHING'
                 borderRadius = {50}
+                containerViewStyle = {{borderRadius: 50}}
               />
             </FadeInView>
           </View>

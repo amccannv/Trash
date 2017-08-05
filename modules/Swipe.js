@@ -21,7 +21,7 @@ export default React.createClass({
           backgroundColor='#D0D0D0'
         />
         <View style={styles.photo}>
-          <Swiper index = {this.props.index} deletedArray = {this.props.deletedArray} handle = {this.props.handle} />
+          <Swiper index = {this.props.index} deletedArray = {this.props.deletedArray} handle = {this.props.handle}/>
         </View>
         {/* <View style={styles.actionBar}>
           <TouchableOpacity style={styles.trashButton}>
